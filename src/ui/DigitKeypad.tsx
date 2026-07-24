@@ -22,18 +22,14 @@ export const DigitKeypad = () => {
       <button
         type="button"
         className="key"
-        onClick={() => {
-          clearEntry();
-        }}
+        onClick={clearEntry}
       >
         CE
       </button>
       <button
         type="button"
         className="key"
-        onClick={() => {
-          allClear();
-        }}
+        onClick={allClear}
       >
         AC
       </button>
