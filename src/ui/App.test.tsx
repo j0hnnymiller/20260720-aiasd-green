@@ -111,3 +111,53 @@ describe("App number entry behavior", () => {
     expect(screen.getByLabelText("Display")).toHaveTextContent("27");
   });
 });
+
+describe("App keyboard interaction behavior", () => {
+  it("enters digits via keyboard", async () => {
+    const { user } = renderApp();
+
+    await user.keyboard("123");
+
+    expect(screen.getByLabelText("Display")).toHaveTextContent("123");
+  });
+
+  it("computes 2 + 3 = 5 via keyboard using Enter", async () => {
+    const { user } = renderApp();
+
+    await user.keyboard("2+3{Enter}");
+
+    expect(screen.getByLabelText("Display")).toHaveTextContent("5");
+  });
+
+  it("computes 2 + 3 = 5 via keyboard using =", async () => {
+    const { user } = renderApp();
+
+    await user.keyboard("2+3=");
+
+    expect(screen.getByLabelText("Display")).toHaveTextContent("5");
+  });
+
+  it("maps * key to multiplication operator", async () => {
+    const { user } = renderApp();
+
+    await user.keyboard("7*6{Enter}");
+
+    expect(screen.getByLabelText("Display")).toHaveTextContent("42");
+  });
+
+  it("maps / key to division operator", async () => {
+    const { user } = renderApp();
+
+    await user.keyboard("8/4{Enter}");
+
+    expect(screen.getByLabelText("Display")).toHaveTextContent("2");
+  });
+
+  it("keyboard flow matches button flow for subtraction", async () => {
+    const { user } = renderApp();
+
+    await user.keyboard("9-12{Enter}");
+
+    expect(screen.getByLabelText("Display")).toHaveTextContent("-3");
+  });
+});
