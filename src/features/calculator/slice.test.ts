@@ -48,6 +48,17 @@ describe("calculator slice - enterDigit", () => {
     expect(cleared).toEqual(initialState);
   });
 
+  it("resets error state with allClear", () => {
+    let state = calculatorReducer(initialState, enterDigit("5"));
+    state = calculatorReducer(state, selectOperator("/"));
+    state = calculatorReducer(state, enterDigit("0"));
+    state = calculatorReducer(state, evaluateExpression());
+
+    const cleared = calculatorReducer(state, allClear());
+
+    expect(cleared).toEqual(initialState);
+  });
+
   it("executes addition with equals", () => {
     let state = calculatorReducer(initialState, enterDigit("2"));
     state = calculatorReducer(state, selectOperator("+"));
