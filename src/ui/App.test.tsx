@@ -111,3 +111,62 @@ describe("App number entry behavior", () => {
     expect(screen.getByLabelText("Display")).toHaveTextContent("27");
   });
 });
+
+describe("App clear controls behavior", () => {
+  it("CE resets only the current operand and display shows 0", async () => {
+    const { user } = renderApp();
+
+    await user.click(screen.getByRole("button", { name: "5" }));
+    await user.click(screen.getByRole("button", { name: "CE" }));
+
+    expect(screen.getByLabelText("Display")).toHaveTextContent("0");
+  });
+
+  it("CE preserves pending operation so subsequent entry and equals completes correctly", async () => {
+    const { user } = renderApp();
+
+    await user.click(screen.getByRole("button", { name: "9" }));
+    await user.click(screen.getByRole("button", { name: "+" }));
+    await user.click(screen.getByRole("button", { name: "3" }));
+    await user.click(screen.getByRole("button", { name: "CE" }));
+    await user.click(screen.getByRole("button", { name: "4" }));
+    await user.click(screen.getByRole("button", { name: "=" }));
+
+    expect(screen.getByLabelText("Display")).toHaveTextContent("13");
+  });
+
+  it("AC resets the full expression state and display shows 0", async () => {
+    const { user } = renderApp();
+
+    await user.click(screen.getByRole("button", { name: "9" }));
+    await user.click(screen.getByRole("button", { name: "+" }));
+    await user.click(screen.getByRole("button", { name: "3" }));
+    await user.click(screen.getByRole("button", { name: "AC" }));
+
+    expect(screen.getByLabelText("Display")).toHaveTextContent("0");
+  });
+
+  it("AC allows fresh calculation after full reset", async () => {
+    const { user } = renderApp();
+
+    await user.click(screen.getByRole("button", { name: "9" }));
+    await user.click(screen.getByRole("button", { name: "+" }));
+    await user.click(screen.getByRole("button", { name: "3" }));
+    await user.click(screen.getByRole("button", { name: "AC" }));
+    await user.click(screen.getByRole("button", { name: "2" }));
+    await user.click(screen.getByRole("button", { name: "+" }));
+    await user.click(screen.getByRole("button", { name: "1" }));
+    await user.click(screen.getByRole("button", { name: "=" }));
+
+    expect(screen.getByLabelText("Display")).toHaveTextContent("3");
+  });
+
+  it("CE from evaluated result shows 0", async () => {
+    const { store, user } = renderApp();
+
+    store.dispatch(seedEvaluatedResult("42"));
+    await user.click(screen.getByRole("button", { name: "CE" }));
+
+    expect(screen.getByLabelText("Display")).toHaveTextContent("0");
+  });
+});

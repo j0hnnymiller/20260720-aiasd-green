@@ -120,6 +120,19 @@ const calculatorSlice = createSlice({
       state.pendingOperator = null;
       state.phase = "evaluated";
     },
+    clearEntry: (state) => {
+      if (state.phase === "error") {
+        return;
+      }
+
+      state.currentEntry = "0";
+
+      if (state.pendingOperator !== null) {
+        state.phase = "entering";
+      } else {
+        state.phase = "idle";
+      }
+    },
     allClear: () => initialState,
     seedEvaluatedResult: (state, action: PayloadAction<string>) => {
       state.currentEntry = action.payload;
@@ -133,6 +146,7 @@ export const {
   enterDigit,
   selectOperator,
   evaluateExpression,
+  clearEntry,
   allClear,
   seedEvaluatedResult,
 } = calculatorSlice.actions;

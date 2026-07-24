@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   allClear,
   calculatorReducer,
+  clearEntry,
   evaluateExpression,
   enterDigit,
   initialState,
@@ -120,5 +121,100 @@ describe("calculator slice - enterDigit", () => {
     state = calculatorReducer(state, evaluateExpression());
 
     expect(state.currentEntry).toBe("20");
+  });
+});
+
+describe("calculator slice - clearEntry", () => {
+  it("resets current entry to 0 from entering phase", () => {
+    let state = calculatorReducer(initialState, enterDigit("5"));
+    state = calculatorReducer(state, clearEntry());
+
+    expect(state.currentEntry).toBe("0");
+    expect(state.previousValue).toBeNull();
+    expect(state.pendingOperator).toBeNull();
+    expect(state.phase).toBe("idle");
+  });
+
+  it("resets only the current operand and preserves pending operation context", () => {
+    let state = calculatorReducer(initialState, enterDigit("9"));
+    state = calculatorReducer(state, selectOperator("+"));
+    state = calculatorReducer(state, enterDigit("3"));
+    state = calculatorReducer(state, clearEntry());
+
+    expect(state.currentEntry).toBe("0");
+    expect(state.previousValue).toBe(9);
+    expect(state.pendingOperator).toBe("+");
+    expect(state.phase).toBe("entering");
+  });
+
+  it("allows new operand entry and correct evaluation after clearEntry", () => {
+    let state = calculatorReducer(initialState, enterDigit("9"));
+    state = calculatorReducer(state, selectOperator("+"));
+    state = calculatorReducer(state, enterDigit("3"));
+    state = calculatorReducer(state, clearEntry());
+    state = calculatorReducer(state, enterDigit("4"));
+    state = calculatorReducer(state, evaluateExpression());
+
+    expect(state.currentEntry).toBe("13");
+  });
+
+  it("resets to idle from evaluated result phase with no pending operator", () => {
+    let state = calculatorReducer(initialState, seedEvaluatedResult("42"));
+    state = calculatorReducer(state, clearEntry());
+
+    expect(state.currentEntry).toBe("0");
+    expect(state.pendingOperator).toBeNull();
+    expect(state.phase).toBe("idle");
+  });
+
+  it("transitions to entering phase when clearEntry is applied in evaluated+pending state", () => {
+    let state = calculatorReducer(initialState, enterDigit("5"));
+    state = calculatorReducer(state, selectOperator("-"));
+    state = calculatorReducer(state, clearEntry());
+
+    expect(state.currentEntry).toBe("0");
+    expect(state.pendingOperator).toBe("-");
+    expect(state.phase).toBe("entering");
+  });
+
+  it("does not affect state in error phase", () => {
+    const errorState = {
+      ...initialState,
+      phase: "error" as const,
+      errorMessage: "Cannot divide by zero",
+      currentEntry: "7",
+    };
+    const next = calculatorReducer(errorState, clearEntry());
+
+    expect(next).toEqual(errorState);
+  });
+});
+
+describe("calculator slice - allClear", () => {
+  it("resets full expression state from entering phase", () => {
+    let state = calculatorReducer(initialState, enterDigit("9"));
+    state = calculatorReducer(state, selectOperator("+"));
+    state = calculatorReducer(state, enterDigit("3"));
+    state = calculatorReducer(state, allClear());
+
+    expect(state).toEqual(initialState);
+  });
+
+  it("resets from evaluated result state", () => {
+    let state = calculatorReducer(initialState, seedEvaluatedResult("42"));
+    state = calculatorReducer(state, allClear());
+
+    expect(state).toEqual(initialState);
+  });
+
+  it("resets from error state", () => {
+    const errorState = {
+      ...initialState,
+      phase: "error" as const,
+      errorMessage: "Cannot divide by zero",
+    };
+    const next = calculatorReducer(errorState, allClear());
+
+    expect(next).toEqual(initialState);
   });
 });

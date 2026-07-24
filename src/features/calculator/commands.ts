@@ -1,5 +1,11 @@
 import type { AppDispatch } from "../../app/store";
-import { enterDigit, evaluateExpression, selectOperator } from "./slice";
+import {
+  allClear,
+  clearEntry,
+  enterDigit,
+  evaluateExpression,
+  selectOperator,
+} from "./slice";
 import type { Operator } from "./types";
 
 export const dispatchEnterDigit = (
@@ -18,4 +24,12 @@ export const dispatchSelectOperator = (
 
 export const dispatchEvaluateExpression = (dispatch: AppDispatch): void => {
   dispatch(evaluateExpression());
+};
+
+export const dispatchClearEntry = (dispatch: AppDispatch): void => {
+  dispatch(clearEntry());
+};
+
+export const dispatchAllClear = (dispatch: AppDispatch): void => {
+  dispatch(allClear());
 };
