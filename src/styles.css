@@ -10,9 +10,9 @@
 
 body {
   margin: 0;
-  /* svh accounts for mobile browser chrome; fallback to vh for older browsers */
-  min-height: 100svh;
+  /* svh accounts for mobile browser chrome; older browsers fall back to vh */
   min-height: 100vh;
+  min-height: 100svh;
   display: grid;
   place-items: center;
   /* padding ensures the calculator stays within the visible area when zoomed */
@@ -51,7 +51,7 @@ body {
 }
 
 .key {
-  /* min 48 × 44 px touch target — exceeds the 44 × 44 px WCAG minimum */
+  /* 48px height × 44px width touch target — both meet or exceed the WCAG 44×44px minimum */
   min-height: 3rem;
   min-width: 2.75rem;
   border: 1px solid #cbd5e1;
