@@ -167,7 +167,7 @@ describe("calculator slice - clearEntry", () => {
     expect(state.phase).toBe("idle");
   });
 
-  it("keeps awaiting the next operand when clearEntry is applied in evaluated+pending state", () => {
+  it("sets phase to evaluated when clearEntry is applied with a pending operator", () => {
     let state = calculatorReducer(initialState, enterDigit("5"));
     state = calculatorReducer(state, selectOperator("-"));
     state = calculatorReducer(state, clearEntry());
