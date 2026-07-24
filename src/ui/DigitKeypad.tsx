@@ -1,4 +1,5 @@
 import {
+  useDecimalEntry,
   useDigitEntry,
   useEvaluate,
   useOperatorSelection,
@@ -9,6 +10,7 @@ const DIGITS = ["7", "8", "9", "4", "5", "6", "1", "2", "3", "0"];
 const OPERATORS: Operator[] = ["+", "-", "x", "/"];
 
 export const DigitKeypad = () => {
+  const enterDecimal = useDecimalEntry();
   const enterDigit = useDigitEntry();
   const selectOperator = useOperatorSelection();
   const evaluateExpression = useEvaluate();
@@ -27,6 +29,14 @@ export const DigitKeypad = () => {
           {digit}
         </button>
       ))}
+      <button
+        type="button"
+        className="key"
+        aria-label="decimal point"
+        onClick={enterDecimal}
+      >
+        .
+      </button>
       {OPERATORS.map((operator) => (
         <button
           key={operator}

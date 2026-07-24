@@ -1,5 +1,10 @@
 import type { AppDispatch } from "../../app/store";
-import { enterDigit, evaluateExpression, selectOperator } from "./slice";
+import {
+  enterDecimal,
+  enterDigit,
+  evaluateExpression,
+  selectOperator,
+} from "./slice";
 import type { Operator } from "./types";
 
 export const dispatchEnterDigit = (
@@ -7,6 +12,10 @@ export const dispatchEnterDigit = (
   digit: string,
 ): void => {
   dispatch(enterDigit(digit));
+};
+
+export const dispatchEnterDecimal = (dispatch: AppDispatch): void => {
+  dispatch(enterDecimal());
 };
 
 export const dispatchSelectOperator = (

@@ -53,6 +53,25 @@ describe("App number entry behavior", () => {
     expect(screen.getByLabelText("Display")).toHaveTextContent("4");
   });
 
+  it("decimal button appends decimal point to display", async () => {
+    const { user } = renderApp();
+
+    await user.click(screen.getByRole("button", { name: "decimal point" }));
+    await user.click(screen.getByRole("button", { name: "5" }));
+
+    expect(screen.getByLabelText("Display")).toHaveTextContent("0.5");
+  });
+
+  it("decimal button is no-op when decimal already present", async () => {
+    const { user } = renderApp();
+
+    await user.click(screen.getByRole("button", { name: "decimal point" }));
+    await user.click(screen.getByRole("button", { name: "decimal point" }));
+    await user.click(screen.getByRole("button", { name: "5" }));
+
+    expect(screen.getByLabelText("Display")).toHaveTextContent("0.5");
+  });
+
   it("computes 2 + 3 = 5", async () => {
     const { user } = renderApp();
 

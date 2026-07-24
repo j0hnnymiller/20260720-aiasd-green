@@ -1,6 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch } from "../../app/store";
 import {
+  dispatchEnterDecimal,
   dispatchEnterDigit,
   dispatchEvaluateExpression,
   dispatchSelectOperator,
@@ -15,6 +16,14 @@ export const useDigitEntry = (): ((digit: string) => void) => {
 
   return (digit: string) => {
     dispatchEnterDigit(dispatch, digit);
+  };
+};
+
+export const useDecimalEntry = (): (() => void) => {
+  const dispatch = useDispatch<AppDispatch>();
+
+  return () => {
+    dispatchEnterDecimal(dispatch);
   };
 };
 

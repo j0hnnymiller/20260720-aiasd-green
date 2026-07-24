@@ -3,6 +3,7 @@ import {
   allClear,
   calculatorReducer,
   evaluateExpression,
+  enterDecimal,
   enterDigit,
   initialState,
   seedEvaluatedResult,
@@ -39,6 +40,37 @@ describe("calculator slice - enterDigit", () => {
     const next = calculatorReducer(initialState, enterDigit("A"));
 
     expect(next).toEqual(initialState);
+  });
+
+  it("enterDecimal appends decimal to current entry", () => {
+    const entered = calculatorReducer(initialState, enterDigit("1"));
+    const next = calculatorReducer(entered, enterDecimal());
+
+    expect(next.currentEntry).toBe("1.");
+    expect(next.phase).toBe("entering");
+  });
+
+  it("enterDecimal is a no-op when currentEntry already contains a decimal", () => {
+    const withDecimal = calculatorReducer(initialState, enterDecimal());
+    const next = calculatorReducer(withDecimal, enterDecimal());
+
+    expect(next).toEqual(withDecimal);
+  });
+
+  it("enterDecimal initializes new operand as 0. after operator is selected", () => {
+    let state = calculatorReducer(initialState, enterDigit("7"));
+    state = calculatorReducer(state, selectOperator("+"));
+    state = calculatorReducer(state, enterDecimal());
+
+    expect(state.currentEntry).toBe("0.");
+    expect(state.phase).toBe("entering");
+  });
+
+  it("enterDecimal starts 0. from idle state", () => {
+    const next = calculatorReducer(initialState, enterDecimal());
+
+    expect(next.currentEntry).toBe("0.");
+    expect(next.phase).toBe("entering");
   });
 
   it("resets state with allClear", () => {

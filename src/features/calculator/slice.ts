@@ -71,6 +71,24 @@ const calculatorSlice = createSlice({
       state.currentEntry = appendDigit(state.currentEntry, action.payload);
       state.phase = "entering";
     },
+    enterDecimal: (state) => {
+      if (state.phase === "error") {
+        return;
+      }
+
+      if (state.phase === "evaluated") {
+        state.currentEntry = "0.";
+        state.phase = "entering";
+        return;
+      }
+
+      if (state.currentEntry.includes(".")) {
+        return;
+      }
+
+      state.currentEntry = `${state.currentEntry}.`;
+      state.phase = "entering";
+    },
     selectOperator: (state, action: PayloadAction<Operator>) => {
       if (state.phase === "error") {
         return;
@@ -131,6 +149,7 @@ const calculatorSlice = createSlice({
 
 export const {
   enterDigit,
+  enterDecimal,
   selectOperator,
   evaluateExpression,
   allClear,
