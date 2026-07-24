@@ -48,6 +48,17 @@ describe("calculator slice - enterDigit", () => {
     expect(cleared).toEqual(initialState);
   });
 
+  it("resets error state with allClear", () => {
+    let state = calculatorReducer(initialState, enterDigit("5"));
+    state = calculatorReducer(state, selectOperator("/"));
+    state = calculatorReducer(state, enterDigit("0"));
+    state = calculatorReducer(state, evaluateExpression());
+
+    const cleared = calculatorReducer(state, allClear());
+
+    expect(cleared).toEqual(initialState);
+  });
+
   it("executes addition with equals", () => {
     let state = calculatorReducer(initialState, enterDigit("2"));
     state = calculatorReducer(state, selectOperator("+"));
@@ -86,6 +97,41 @@ describe("calculator slice - enterDigit", () => {
     state = calculatorReducer(state, evaluateExpression());
 
     expect(state.currentEntry).toBe("2");
+  });
+
+  it("enters readable error state for division by zero", () => {
+    let state = calculatorReducer(initialState, enterDigit("5"));
+    state = calculatorReducer(state, selectOperator("/"));
+    state = calculatorReducer(state, enterDigit("0"));
+    state = calculatorReducer(state, evaluateExpression());
+
+    expect(state.phase).toBe("error");
+    expect(state.errorMessage).toBe("Cannot divide by zero");
+    expect(state.currentEntry).toBe("0");
+    expect(state.pendingOperator).toBeNull();
+    expect(state.previousValue).toBeNull();
+  });
+
+  it("enters error state in chained operation when dividing by zero", () => {
+    let state = calculatorReducer(initialState, enterDigit("5"));
+    state = calculatorReducer(state, selectOperator("/"));
+    state = calculatorReducer(state, enterDigit("0"));
+    state = calculatorReducer(state, selectOperator("+"));
+
+    expect(state.phase).toBe("error");
+    expect(state.errorMessage).toBe("Cannot divide by zero");
+  });
+
+  it("recovers from error state when a valid digit is entered", () => {
+    let state = calculatorReducer(initialState, enterDigit("5"));
+    state = calculatorReducer(state, selectOperator("/"));
+    state = calculatorReducer(state, enterDigit("0"));
+    state = calculatorReducer(state, evaluateExpression());
+    state = calculatorReducer(state, enterDigit("7"));
+
+    expect(state.phase).toBe("entering");
+    expect(state.errorMessage).toBeNull();
+    expect(state.currentEntry).toBe("7");
   });
 
   it("replaces pending operator deterministically when pressed repeatedly", () => {
