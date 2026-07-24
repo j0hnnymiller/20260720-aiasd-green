@@ -111,3 +111,97 @@ describe("App number entry behavior", () => {
     expect(screen.getByLabelText("Display")).toHaveTextContent("27");
   });
 });
+
+describe("App sign toggle behavior", () => {
+  it("negates a positive entry via +/- button", async () => {
+    const { user } = renderApp();
+
+    await user.click(screen.getByRole("button", { name: "5" }));
+    await user.click(screen.getByRole("button", { name: "+/-" }));
+
+    expect(screen.getByLabelText("Display")).toHaveTextContent("-5");
+  });
+
+  it("restores positive from negative via +/- pressed twice", async () => {
+    const { user } = renderApp();
+
+    await user.click(screen.getByRole("button", { name: "5" }));
+    await user.click(screen.getByRole("button", { name: "+/-" }));
+    await user.click(screen.getByRole("button", { name: "+/-" }));
+
+    expect(screen.getByLabelText("Display")).toHaveTextContent("5");
+  });
+});
+
+describe("App percent behavior", () => {
+  it("converts 10 to 0.1 via % button", async () => {
+    const { user } = renderApp();
+
+    await user.click(screen.getByRole("button", { name: "1" }));
+    await user.click(screen.getByRole("button", { name: "0" }));
+    await user.click(screen.getByRole("button", { name: "%" }));
+
+    expect(screen.getByLabelText("Display")).toHaveTextContent("0.1");
+  });
+
+  it("computes 200 + 10% = 200.1", async () => {
+    const { user } = renderApp();
+
+    await user.click(screen.getByRole("button", { name: "2" }));
+    await user.click(screen.getByRole("button", { name: "0" }));
+    await user.click(screen.getByRole("button", { name: "0" }));
+    await user.click(screen.getByRole("button", { name: "+" }));
+    await user.click(screen.getByRole("button", { name: "1" }));
+    await user.click(screen.getByRole("button", { name: "0" }));
+    await user.click(screen.getByRole("button", { name: "%" }));
+    await user.click(screen.getByRole("button", { name: "=" }));
+
+    expect(screen.getByLabelText("Display")).toHaveTextContent("200.1");
+  });
+
+  it("computes 200 x 10% = 20", async () => {
+    const { user } = renderApp();
+
+    await user.click(screen.getByRole("button", { name: "2" }));
+    await user.click(screen.getByRole("button", { name: "0" }));
+    await user.click(screen.getByRole("button", { name: "0" }));
+    await user.click(screen.getByRole("button", { name: "x" }));
+    await user.click(screen.getByRole("button", { name: "1" }));
+    await user.click(screen.getByRole("button", { name: "0" }));
+    await user.click(screen.getByRole("button", { name: "%" }));
+    await user.click(screen.getByRole("button", { name: "=" }));
+
+    expect(screen.getByLabelText("Display")).toHaveTextContent("20");
+  });
+
+
+  it("computes 200 - 10% = 199.9", async () => {
+    const { user } = renderApp();
+
+    await user.click(screen.getByRole("button", { name: "2" }));
+    await user.click(screen.getByRole("button", { name: "0" }));
+    await user.click(screen.getByRole("button", { name: "0" }));
+    await user.click(screen.getByRole("button", { name: "-" }));
+    await user.click(screen.getByRole("button", { name: "1" }));
+    await user.click(screen.getByRole("button", { name: "0" }));
+    await user.click(screen.getByRole("button", { name: "%" }));
+    await user.click(screen.getByRole("button", { name: "=" }));
+
+    expect(screen.getByLabelText("Display")).toHaveTextContent("199.9");
+  });
+
+  it("computes 200 / 10% = 2000", async () => {
+    const { user } = renderApp();
+
+    await user.click(screen.getByRole("button", { name: "2" }));
+    await user.click(screen.getByRole("button", { name: "0" }));
+    await user.click(screen.getByRole("button", { name: "0" }));
+    await user.click(screen.getByRole("button", { name: "/" }));
+    await user.click(screen.getByRole("button", { name: "1" }));
+    await user.click(screen.getByRole("button", { name: "0" }));
+    await user.click(screen.getByRole("button", { name: "%" }));
+    await user.click(screen.getByRole("button", { name: "=" }));
+
+    expect(screen.getByLabelText("Display")).toHaveTextContent("2000");
+  });
+});

@@ -126,6 +126,28 @@ const calculatorSlice = createSlice({
       state.phase = "evaluated";
       state.errorMessage = null;
     },
+    toggleSign: (state) => {
+      if (state.phase === "error") {
+        return;
+      }
+
+      const value = Number(state.currentEntry);
+
+      if (value === 0) {
+        return;
+      }
+
+      state.currentEntry = String(-value);
+    },
+    applyPercent: (state) => {
+      if (state.phase === "error") {
+        return;
+      }
+
+      const value = Number(state.currentEntry);
+
+      state.currentEntry = String(value / 100);
+    },
   },
 });
 
@@ -135,6 +157,8 @@ export const {
   evaluateExpression,
   allClear,
   seedEvaluatedResult,
+  toggleSign,
+  applyPercent,
 } = calculatorSlice.actions;
 export const calculatorReducer = calculatorSlice.reducer;
 export { initialState };

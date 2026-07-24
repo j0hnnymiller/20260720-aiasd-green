@@ -1,7 +1,9 @@
 import {
+  useApplyPercent,
   useDigitEntry,
   useEvaluate,
   useOperatorSelection,
+  useToggleSign,
 } from "../features/calculator/hooks";
 import type { Operator } from "../features/calculator/types";
 
@@ -12,6 +14,8 @@ export const DigitKeypad = () => {
   const enterDigit = useDigitEntry();
   const selectOperator = useOperatorSelection();
   const evaluateExpression = useEvaluate();
+  const toggleSign = useToggleSign();
+  const applyPercent = useApplyPercent();
 
   return (
     <section className="keypad" aria-label="Calculator keys">
@@ -47,6 +51,24 @@ export const DigitKeypad = () => {
         }}
       >
         =
+      </button>
+      <button
+        type="button"
+        className="key"
+        onClick={() => {
+          toggleSign();
+        }}
+      >
+        +/-
+      </button>
+      <button
+        type="button"
+        className="key"
+        onClick={() => {
+          applyPercent();
+        }}
+      >
+        %
       </button>
     </section>
   );
