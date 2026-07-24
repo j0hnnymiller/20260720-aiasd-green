@@ -1,4 +1,5 @@
 import {
+  useAllClear,
   useDigitEntry,
   useEvaluate,
   useOperatorSelection,
@@ -12,6 +13,7 @@ export const DigitKeypad = () => {
   const enterDigit = useDigitEntry();
   const selectOperator = useOperatorSelection();
   const evaluateExpression = useEvaluate();
+  const allClear = useAllClear();
 
   return (
     <section className="keypad" aria-label="Calculator keys">
@@ -39,6 +41,15 @@ export const DigitKeypad = () => {
           {operator}
         </button>
       ))}
+      <button
+        type="button"
+        className="key"
+        onClick={() => {
+          allClear();
+        }}
+      >
+        AC
+      </button>
       <button
         type="button"
         className="key"
