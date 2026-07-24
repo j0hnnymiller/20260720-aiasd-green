@@ -51,9 +51,9 @@ body {
 }
 
 .key {
-  /* 48px height × 44px width touch target — both meet or exceed the WCAG 44×44px minimum */
-  min-height: 3rem;
-  min-width: 2.75rem;
+  /* enforce at least 44×44 CSS pixels while still honoring larger user font settings */
+  min-height: max(44px, 3rem);
+  min-width: max(44px, 2.75rem);
   border: 1px solid #cbd5e1;
   border-radius: 8px;
   background: #f1f5f9;

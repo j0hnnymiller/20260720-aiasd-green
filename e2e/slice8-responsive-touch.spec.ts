@@ -26,7 +26,7 @@ test.describe("Slice 8: Responsive Touch Experience", () => {
     await expect(page.getByLabel("Display")).toHaveText("9");
   });
 
-  test("digit buttons meet the 44x44 CSS-pixel touch-target minimum", async ({
+  test("all buttons meet the 44x44 CSS-pixel touch-target minimum", async ({
     page,
   }) => {
     await page.setViewportSize({ width: 375, height: 667 });
