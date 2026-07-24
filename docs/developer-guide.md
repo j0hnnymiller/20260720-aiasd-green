@@ -189,6 +189,29 @@ These rules enforce the command/query boundary. Violations should be caught by E
 4. **Selectors are idempotent.** A selector called with the same state must always return the same result.
 5. **Commands are intention-revealing.** Use `EvaluateExpression` not `setResult`; use `AllClear` not `resetState`.
 
+### Calculator Reducer Invariants (Mandatory)
+
+These invariants must remain true across all slices that touch calculator command handlers.
+
+1. **Operator replacement must not evaluate early.**
+   When `pendingOperator !== null` and no right-hand operand is committed yet, pressing another operator must only replace `pendingOperator`.
+2. **Operator chaining must evaluate exactly once per committed right-hand operand.**
+   When a right-hand operand is committed, selecting another operator performs one evaluation and sets the new pending operator.
+3. **Clear semantics must preserve deterministic operator behavior.**
+   If `ClearEntry` is present, `9 + CE -` must replace `+` with `-` without computing `9 + 0`.
+
+Any command change that can affect these invariants requires reducer tests and UI tests for replacement/chaining behavior.
+
+## Pull Request Checklist
+
+Before requesting review for command-layer changes, confirm all items below.
+
+- [ ] Command/query boundary remains intact.
+- [ ] Existing command invariants are listed and revalidated.
+- [ ] Transition tests cover changed command interactions, not only happy paths.
+- [ ] Interaction regression test added for cross-slice behavior (for example, operator replacement after clear semantics changes).
+- [ ] `pnpm typecheck`, `pnpm lint`, and `pnpm test` pass.
+
 ---
 
 ## Architecture Decision Records

@@ -110,6 +110,43 @@ describe("App number entry behavior", () => {
 
     expect(screen.getByLabelText("Display")).toHaveTextContent("27");
   });
+
+  it("shows readable error state on division by zero", async () => {
+    const { user } = renderApp();
+
+    await user.click(screen.getByRole("button", { name: "5" }));
+    await user.click(screen.getByRole("button", { name: "/" }));
+    await user.click(screen.getByRole("button", { name: "0" }));
+    await user.click(screen.getByRole("button", { name: "=" }));
+
+    expect(screen.getByLabelText("Display")).toHaveTextContent(
+      "Cannot divide by zero",
+    );
+  });
+
+  it("recovers from error state with AC", async () => {
+    const { user } = renderApp();
+
+    await user.click(screen.getByRole("button", { name: "5" }));
+    await user.click(screen.getByRole("button", { name: "/" }));
+    await user.click(screen.getByRole("button", { name: "0" }));
+    await user.click(screen.getByRole("button", { name: "=" }));
+    await user.click(screen.getByRole("button", { name: "AC" }));
+
+    expect(screen.getByLabelText("Display")).toHaveTextContent("0");
+  });
+
+  it("recovers from error state with fresh valid input", async () => {
+    const { user } = renderApp();
+
+    await user.click(screen.getByRole("button", { name: "5" }));
+    await user.click(screen.getByRole("button", { name: "/" }));
+    await user.click(screen.getByRole("button", { name: "0" }));
+    await user.click(screen.getByRole("button", { name: "=" }));
+    await user.click(screen.getByRole("button", { name: "7" }));
+
+    expect(screen.getByLabelText("Display")).toHaveTextContent("7");
+  });
 });
 
 describe("App clear controls behavior", () => {
