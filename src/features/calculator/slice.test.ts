@@ -1,12 +1,14 @@
 import { describe, expect, it } from "vitest";
 import {
   allClear,
+  applyPercent,
   calculatorReducer,
   evaluateExpression,
   enterDigit,
   initialState,
   seedEvaluatedResult,
   selectOperator,
+  toggleSign,
 } from "./slice";
 
 describe("calculator slice - enterDigit", () => {
@@ -120,5 +122,121 @@ describe("calculator slice - enterDigit", () => {
     state = calculatorReducer(state, evaluateExpression());
 
     expect(state.currentEntry).toBe("20");
+  });
+});
+
+describe("calculator slice - toggleSign", () => {
+  it("negates a positive entry", () => {
+    let state = calculatorReducer(initialState, enterDigit("5"));
+    state = calculatorReducer(state, toggleSign());
+
+    expect(state.currentEntry).toBe("-5");
+  });
+
+  it("restores positive value from negative entry", () => {
+    let state = calculatorReducer(initialState, enterDigit("5"));
+    state = calculatorReducer(state, toggleSign());
+    state = calculatorReducer(state, toggleSign());
+
+    expect(state.currentEntry).toBe("5");
+  });
+
+  it("does not change zero", () => {
+    const state = calculatorReducer(initialState, toggleSign());
+
+    expect(state.currentEntry).toBe("0");
+  });
+
+  it("no-ops in error phase", () => {
+    const errorState = {
+      ...initialState,
+      phase: "error" as const,
+      errorMessage: "Cannot divide by zero",
+      currentEntry: "9",
+    };
+    const next = calculatorReducer(errorState, toggleSign());
+
+    expect(next.currentEntry).toBe("9");
+  });
+
+  it("toggles sign on evaluated result", () => {
+    let state = calculatorReducer(initialState, seedEvaluatedResult("42"));
+    state = calculatorReducer(state, toggleSign());
+
+    expect(state.currentEntry).toBe("-42");
+  });
+});
+
+describe("calculator slice - applyPercent", () => {
+  it("converts entry to decimal form: 10% => 0.1", () => {
+    let state = calculatorReducer(initialState, enterDigit("1"));
+    state = calculatorReducer(state, enterDigit("0"));
+    state = calculatorReducer(state, applyPercent());
+
+    expect(state.currentEntry).toBe("0.1");
+  });
+
+  it("200 + 10% = 200.1", () => {
+    let state = calculatorReducer(initialState, enterDigit("2"));
+    state = calculatorReducer(state, enterDigit("0"));
+    state = calculatorReducer(state, enterDigit("0"));
+    state = calculatorReducer(state, selectOperator("+"));
+    state = calculatorReducer(state, enterDigit("1"));
+    state = calculatorReducer(state, enterDigit("0"));
+    state = calculatorReducer(state, applyPercent());
+    state = calculatorReducer(state, evaluateExpression());
+
+    expect(state.currentEntry).toBe("200.1");
+  });
+
+  it("200 - 10% = 199.9", () => {
+    let state = calculatorReducer(initialState, enterDigit("2"));
+    state = calculatorReducer(state, enterDigit("0"));
+    state = calculatorReducer(state, enterDigit("0"));
+    state = calculatorReducer(state, selectOperator("-"));
+    state = calculatorReducer(state, enterDigit("1"));
+    state = calculatorReducer(state, enterDigit("0"));
+    state = calculatorReducer(state, applyPercent());
+    state = calculatorReducer(state, evaluateExpression());
+
+    expect(state.currentEntry).toBe("199.9");
+  });
+
+  it("200 x 10% = 20", () => {
+    let state = calculatorReducer(initialState, enterDigit("2"));
+    state = calculatorReducer(state, enterDigit("0"));
+    state = calculatorReducer(state, enterDigit("0"));
+    state = calculatorReducer(state, selectOperator("x"));
+    state = calculatorReducer(state, enterDigit("1"));
+    state = calculatorReducer(state, enterDigit("0"));
+    state = calculatorReducer(state, applyPercent());
+    state = calculatorReducer(state, evaluateExpression());
+
+    expect(state.currentEntry).toBe("20");
+  });
+
+  it("200 / 10% = 2000", () => {
+    let state = calculatorReducer(initialState, enterDigit("2"));
+    state = calculatorReducer(state, enterDigit("0"));
+    state = calculatorReducer(state, enterDigit("0"));
+    state = calculatorReducer(state, selectOperator("/"));
+    state = calculatorReducer(state, enterDigit("1"));
+    state = calculatorReducer(state, enterDigit("0"));
+    state = calculatorReducer(state, applyPercent());
+    state = calculatorReducer(state, evaluateExpression());
+
+    expect(state.currentEntry).toBe("2000");
+  });
+
+  it("no-ops in error phase", () => {
+    const errorState = {
+      ...initialState,
+      phase: "error" as const,
+      errorMessage: "Cannot divide by zero",
+      currentEntry: "9",
+    };
+    const next = calculatorReducer(errorState, applyPercent());
+
+    expect(next.currentEntry).toBe("9");
   });
 });

@@ -1,9 +1,11 @@
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch } from "../../app/store";
 import {
+  dispatchApplyPercent,
   dispatchEnterDigit,
   dispatchEvaluateExpression,
   dispatchSelectOperator,
+  dispatchToggleSign,
 } from "./commands";
 import { selectDisplayValue } from "./queries";
 import type { Operator } from "./types";
@@ -31,5 +33,21 @@ export const useEvaluate = (): (() => void) => {
 
   return () => {
     dispatchEvaluateExpression(dispatch);
+  };
+};
+
+export const useToggleSign = (): (() => void) => {
+  const dispatch = useDispatch<AppDispatch>();
+
+  return () => {
+    dispatchToggleSign(dispatch);
+  };
+};
+
+export const useApplyPercent = (): (() => void) => {
+  const dispatch = useDispatch<AppDispatch>();
+
+  return () => {
+    dispatchApplyPercent(dispatch);
   };
 };
