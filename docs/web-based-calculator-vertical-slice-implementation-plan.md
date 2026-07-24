@@ -105,6 +105,7 @@ Acceptance checks:
 - `CE` resets only current operand.
 - `AC` resets full expression state.
 - Behavior is correct from entry, result, and pending states.
+- Operator replacement remains deterministic after `CE` in pending state (`9 + CE -` replaces operator without eager evaluation).
 
 ### Slice 5: Error and Recovery
 

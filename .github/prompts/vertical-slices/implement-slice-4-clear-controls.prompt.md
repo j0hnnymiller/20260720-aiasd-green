@@ -44,6 +44,8 @@ Slice 4 acceptance checks:
 - `CE` resets only current operand.
 - `AC` resets full expression state.
 - Behavior is correct from entry, result, and pending states.
+- Operator replacement remains deterministic after `CE` in pending state (`9 + CE -` must replace operator only).
+- `CE` must not cause eager evaluation of a synthetic `0` operand when operator is changed before next digit entry.
 
 ## Required Inputs
 
@@ -70,6 +72,7 @@ Use these repository sources as the implementation contract:
 4. Wire clear-control UI events to command dispatch.
 5. Add unit tests for CE vs AC semantics across state modes.
 6. Add component tests verifying display behavior for CE and AC interactions.
+7. Add reducer and UI regression tests for `9 + CE -` and `9 + CE - 4 =`.
 
 ## Verification Steps (Mandatory)
 
@@ -100,13 +103,19 @@ Provide a short demo script suitable for product stakeholders:
 2. Demonstrate Scenario A (CE on active entry):
    - Click 1, 2, 3, CE
    - Expected display resets only current entry
-3. Demonstrate Scenario B (AC from pending operation):
+3. Demonstrate Scenario B (operator replacement after CE in pending state):
+   - Click 9, +, CE, -
+   - Expected behavior: operator is replaced, no eager evaluation is performed
+4. Demonstrate Scenario C (complete sequence after replacement):
+   - Continue from Scenario B with 4, =
+   - Expected display: 5
+5. Demonstrate Scenario D (AC from pending operation):
    - Click 7, +, 8, AC
    - Expected display and expression state fully reset
-4. Demonstrate Scenario C (clear behavior after result):
+6. Demonstrate Scenario E (clear behavior after result):
    - Click 2, +, 3, =, CE and AC
    - Show and explain the implemented state outcomes
-5. Confirm acceptance checks:
+7. Confirm acceptance checks:
    - Map each shown scenario to the Slice 4 acceptance checks and mark PASS/FAIL
 
 For the showcase output, include:

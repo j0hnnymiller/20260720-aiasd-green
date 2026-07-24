@@ -121,4 +121,53 @@ describe("calculator slice - enterDigit", () => {
 
     expect(state.currentEntry).toBe("20");
   });
+
+  it.each([
+    {
+      name: "replaces a pending operator when no right-hand operand is committed",
+      actions: [enterDigit("9"), selectOperator("+"), selectOperator("-")],
+      expected: {
+        currentEntry: "9",
+        previousValue: 9,
+        pendingOperator: "-",
+        phase: "evaluated",
+      },
+    },
+    {
+      name: "evaluates immediately when a right-hand operand has been committed",
+      actions: [
+        enterDigit("9"),
+        selectOperator("+"),
+        enterDigit("3"),
+        selectOperator("-"),
+      ],
+      expected: {
+        currentEntry: "12",
+        previousValue: 12,
+        pendingOperator: "-",
+        phase: "evaluated",
+      },
+    },
+    {
+      name: "keeps replacement deterministic after a seeded evaluated result",
+      actions: [
+        seedEvaluatedResult("5"),
+        selectOperator("+"),
+        selectOperator("x"),
+      ],
+      expected: {
+        currentEntry: "5",
+        previousValue: 5,
+        pendingOperator: "x",
+        phase: "evaluated",
+      },
+    },
+  ])("$name", ({ actions, expected }) => {
+    const state = actions.reduce(calculatorReducer, initialState);
+
+    expect(state.currentEntry).toBe(expected.currentEntry);
+    expect(state.previousValue).toBe(expected.previousValue);
+    expect(state.pendingOperator).toBe(expected.pendingOperator);
+    expect(state.phase).toBe(expected.phase);
+  });
 });
