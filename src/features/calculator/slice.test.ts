@@ -144,7 +144,7 @@ describe("calculator slice - clearEntry", () => {
     expect(state.currentEntry).toBe("0");
     expect(state.previousValue).toBe(9);
     expect(state.pendingOperator).toBe("+");
-    expect(state.phase).toBe("entering");
+    expect(state.phase).toBe("evaluated");
   });
 
   it("allows new operand entry and correct evaluation after clearEntry", () => {
@@ -167,14 +167,26 @@ describe("calculator slice - clearEntry", () => {
     expect(state.phase).toBe("idle");
   });
 
-  it("transitions to entering phase when clearEntry is applied in evaluated+pending state", () => {
+  it("keeps awaiting the next operand when clearEntry is applied in evaluated+pending state", () => {
     let state = calculatorReducer(initialState, enterDigit("5"));
     state = calculatorReducer(state, selectOperator("-"));
     state = calculatorReducer(state, clearEntry());
 
     expect(state.currentEntry).toBe("0");
     expect(state.pendingOperator).toBe("-");
-    expect(state.phase).toBe("entering");
+    expect(state.phase).toBe("evaluated");
+  });
+
+  it("replaces the pending operator after clearEntry without consuming the cleared zero", () => {
+    let state = calculatorReducer(initialState, enterDigit("9"));
+    state = calculatorReducer(state, selectOperator("+"));
+    state = calculatorReducer(state, clearEntry());
+    state = calculatorReducer(state, selectOperator("-"));
+
+    expect(state.currentEntry).toBe("0");
+    expect(state.previousValue).toBe(9);
+    expect(state.pendingOperator).toBe("-");
+    expect(state.phase).toBe("evaluated");
   });
 
   it("does not affect state in error phase", () => {

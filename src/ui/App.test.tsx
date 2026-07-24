@@ -135,6 +135,19 @@ describe("App clear controls behavior", () => {
     expect(screen.getByLabelText("Display")).toHaveTextContent("13");
   });
 
+  it("CE allows replacing the pending operator before entering the next operand", async () => {
+    const { user } = renderApp();
+
+    await user.click(screen.getByRole("button", { name: "9" }));
+    await user.click(screen.getByRole("button", { name: "+" }));
+    await user.click(screen.getByRole("button", { name: "CE" }));
+    await user.click(screen.getByRole("button", { name: "-" }));
+    await user.click(screen.getByRole("button", { name: "4" }));
+    await user.click(screen.getByRole("button", { name: "=" }));
+
+    expect(screen.getByLabelText("Display")).toHaveTextContent("5");
+  });
+
   it("AC resets the full expression state and display shows 0", async () => {
     const { user } = renderApp();
 

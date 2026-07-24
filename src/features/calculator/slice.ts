@@ -94,6 +94,11 @@ const calculatorSlice = createSlice({
         return;
       }
 
+      if (state.pendingOperator !== null && state.phase === "evaluated") {
+        state.pendingOperator = nextOperator;
+        return;
+      }
+
       state.previousValue = currentValue;
       state.pendingOperator = nextOperator;
       state.phase = "evaluated";
@@ -128,7 +133,7 @@ const calculatorSlice = createSlice({
       state.currentEntry = "0";
 
       if (state.pendingOperator !== null) {
-        state.phase = "entering";
+        state.phase = "evaluated";
       } else {
         state.phase = "idle";
       }
