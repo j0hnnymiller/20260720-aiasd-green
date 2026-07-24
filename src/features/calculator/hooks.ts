@@ -9,6 +9,8 @@ import {
 import { selectDisplayValue } from "./queries";
 import type { Operator } from "./types";
 
+// Maps keyboard keys to the operator symbols used internally.
+// The keyboard '*' key maps to 'x' because the calculator uses 'x' for multiplication.
 const OPERATOR_KEY_MAP: Record<string, Operator> = {
   "+": "+",
   "-": "-",
