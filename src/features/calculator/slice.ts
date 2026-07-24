@@ -9,6 +9,8 @@ const initialState: CalculatorState = {
   errorMessage: null,
 };
 
+const DIVIDE_BY_ZERO_ERROR = "Cannot divide by zero";
+
 const isDigit = (value: string): value is `${number}` => /^\d$/.test(value);
 
 const appendDigit = (entry: string, digit: string): string => {
@@ -23,7 +25,7 @@ const applyOperation = (
   left: number,
   operator: Operator,
   right: number,
-): number => {
+): number | null => {
   switch (operator) {
     case "+":
       return left + right;
@@ -32,10 +34,21 @@ const applyOperation = (
     case "x":
       return left * right;
     case "/":
+      if (right === 0) {
+        return null;
+      }
       return left / right;
     default:
       return right;
   }
+};
+
+const enterErrorState = (state: CalculatorState): void => {
+  state.currentEntry = "0";
+  state.previousValue = null;
+  state.pendingOperator = null;
+  state.phase = "error";
+  state.errorMessage = DIVIDE_BY_ZERO_ERROR;
 };
 
 const calculatorSlice = createSlice({
@@ -87,6 +100,11 @@ const calculatorSlice = createSlice({
           currentValue,
         );
 
+        if (result === null) {
+          enterErrorState(state);
+          return;
+        }
+
         state.currentEntry = String(result);
         state.previousValue = result;
         state.pendingOperator = nextOperator;
@@ -114,6 +132,11 @@ const calculatorSlice = createSlice({
         state.pendingOperator,
         rightValue,
       );
+
+      if (result === null) {
+        enterErrorState(state);
+        return;
+      }
 
       state.currentEntry = String(result);
       state.previousValue = null;
