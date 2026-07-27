@@ -10,9 +10,13 @@
 
 body {
   margin: 0;
+  /* svh accounts for mobile browser chrome; older browsers fall back to vh */
   min-height: 100vh;
+  min-height: 100svh;
   display: grid;
   place-items: center;
+  /* padding ensures the calculator stays within the visible area when zoomed */
+  padding: 1rem;
 }
 
 .calculator {
@@ -31,8 +35,13 @@ body {
   margin-bottom: 0.75rem;
   border: 1px solid #cbd5e1;
   border-radius: 8px;
-  font-size: 2rem;
+  /* clamp keeps the font readable across viewports and zoom levels */
+  font-size: clamp(1.25rem, 5.5vw, 2rem);
   text-align: right;
+  /* prevent long values from overflowing the display box */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .keypad {
@@ -42,9 +51,16 @@ body {
 }
 
 .key {
-  min-height: 3rem;
+  /* enforce at least 44×44 CSS pixels while still honoring larger user font settings */
+  min-height: max(44px, 3rem);
+  min-width: max(44px, 2.75rem);
   border: 1px solid #cbd5e1;
   border-radius: 8px;
   background: #f1f5f9;
   font-size: 1.25rem;
+  cursor: pointer;
+  /* eliminate the 300 ms tap delay and prevent unintended browser gestures */
+  touch-action: manipulation;
+  /* remove the default semi-transparent tap highlight on mobile WebKit */
+  -webkit-tap-highlight-color: transparent;
 }
