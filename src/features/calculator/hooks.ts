@@ -2,6 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch } from "../../app/store";
 import {
   dispatchAllClear,
+  dispatchClearEntry,
   dispatchEnterDigit,
   dispatchEvaluateExpression,
   dispatchSelectOperator,
@@ -32,6 +33,14 @@ export const useEvaluate = (): (() => void) => {
 
   return () => {
     dispatchEvaluateExpression(dispatch);
+  };
+};
+
+export const useClearEntry = (): (() => void) => {
+  const dispatch = useDispatch<AppDispatch>();
+
+  return () => {
+    dispatchClearEntry(dispatch);
   };
 };
 

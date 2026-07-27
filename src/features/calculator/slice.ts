@@ -112,6 +112,11 @@ const calculatorSlice = createSlice({
         return;
       }
 
+      if (state.pendingOperator !== null && state.phase === "evaluated") {
+        state.pendingOperator = nextOperator;
+        return;
+      }
+
       state.previousValue = currentValue;
       state.pendingOperator = nextOperator;
       state.phase = "evaluated";
@@ -143,6 +148,19 @@ const calculatorSlice = createSlice({
       state.pendingOperator = null;
       state.phase = "evaluated";
     },
+    clearEntry: (state) => {
+      if (state.phase === "error") {
+        return;
+      }
+
+      state.currentEntry = "0";
+
+      if (state.pendingOperator !== null) {
+        state.phase = "evaluated";
+      } else {
+        state.phase = "idle";
+      }
+    },
     allClear: () => initialState,
     seedEvaluatedResult: (state, action: PayloadAction<string>) => {
       state.currentEntry = action.payload;
@@ -156,6 +174,7 @@ export const {
   enterDigit,
   selectOperator,
   evaluateExpression,
+  clearEntry,
   allClear,
   seedEvaluatedResult,
 } = calculatorSlice.actions;
