@@ -1,5 +1,7 @@
 import {
+  useClearEntry,
   useAllClear,
+  useDecimalEntry,
   useDigitEntry,
   useEvaluate,
   useOperatorSelection,
@@ -11,8 +13,10 @@ const OPERATORS: Operator[] = ["+", "-", "x", "/"];
 
 export const DigitKeypad = () => {
   const enterDigit = useDigitEntry();
+  const enterDecimal = useDecimalEntry();
   const selectOperator = useOperatorSelection();
   const evaluateExpression = useEvaluate();
+  const clearEntry = useClearEntry();
   const allClear = useAllClear();
 
   return (
@@ -29,6 +33,15 @@ export const DigitKeypad = () => {
           {digit}
         </button>
       ))}
+      <button
+        type="button"
+        className="key"
+        onClick={() => {
+          enterDecimal();
+        }}
+      >
+        .
+      </button>
       {OPERATORS.map((operator) => (
         <button
           key={operator}
@@ -41,6 +54,15 @@ export const DigitKeypad = () => {
           {operator}
         </button>
       ))}
+      <button
+        type="button"
+        className="key"
+        onClick={() => {
+          clearEntry();
+        }}
+      >
+        CE
+      </button>
       <button
         type="button"
         className="key"

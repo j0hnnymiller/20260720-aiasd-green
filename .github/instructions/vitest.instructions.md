@@ -28,7 +28,7 @@ nextReview: "2026-10-24"
 
 ## Overview
 
-Apply these rules when editing files matching **/*.{test,spec}.{ts,tsx} in this CQRS calculator repository.
+Apply these rules when editing files matching \*_/_.{test,spec}.{ts,tsx} in this CQRS calculator repository.
 
 ## Rules
 
@@ -47,6 +47,10 @@ Apply these rules when editing files matching **/*.{test,spec}.{ts,tsx} in this 
 
 - Keep changes small and intention-revealing.
 - Add or update tests with behavior changes.
+- For reducer or state-machine changes, add transition tests that cover operator replacement,
+  chaining, and clear-action interactions.
+- Add at least one UI or integration regression test for cross-action paths when command
+  semantics change.
 - Keep lint, typecheck, and test gates green.
 
 ## Do Not
@@ -59,5 +63,7 @@ Apply these rules when editing files matching **/*.{test,spec}.{ts,tsx} in this 
 
 - [ ] Command/query boundary preserved.
 - [ ] Edge cases covered by tests.
+- [ ] Transition matrix coverage added for changed reducer states and actions.
+- [ ] Operator replacement and clear-control interactions are regression-tested when applicable.
 - [ ] Accessibility verified where relevant.
 - [ ] Lint, typecheck, and tests pass.

@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
   allClear,
+  clearEntry,
   calculatorReducer,
   evaluateExpression,
+  enterDecimal,
   enterDigit,
   initialState,
   seedEvaluatedResult,
@@ -25,6 +27,32 @@ describe("calculator slice - enterDigit", () => {
     state = calculatorReducer(state, enterDigit("7"));
 
     expect(state.currentEntry).toBe("7");
+  });
+
+  it("starts a decimal-first entry with a leading zero", () => {
+    const state = calculatorReducer(initialState, enterDecimal());
+
+    expect(state.currentEntry).toBe("0.");
+    expect(state.phase).toBe("entering");
+  });
+
+  it("ignores duplicate decimal points within the active entry", () => {
+    let state = calculatorReducer(initialState, enterDigit("1"));
+    state = calculatorReducer(state, enterDecimal());
+    state = calculatorReducer(state, enterDecimal());
+    state = calculatorReducer(state, enterDigit("2"));
+
+    expect(state.currentEntry).toBe("1.2");
+  });
+
+  it("starts the next operand with a decimal after an operator", () => {
+    let state = calculatorReducer(initialState, enterDigit("9"));
+    state = calculatorReducer(state, selectOperator("+"));
+    state = calculatorReducer(state, enterDecimal());
+    state = calculatorReducer(state, enterDigit("4"));
+    state = calculatorReducer(state, evaluateExpression());
+
+    expect(state.currentEntry).toBe("9.4");
   });
 
   it("starts a fresh entry when phase is evaluated and no pending operator exists", () => {
@@ -57,6 +85,37 @@ describe("calculator slice - enterDigit", () => {
     const cleared = calculatorReducer(state, allClear());
 
     expect(cleared).toEqual(initialState);
+  });
+
+  it("clears only the active entry with clearEntry", () => {
+    let state = calculatorReducer(initialState, enterDigit("1"));
+    state = calculatorReducer(state, enterDigit("2"));
+    state = calculatorReducer(state, enterDigit("3"));
+    state = calculatorReducer(state, clearEntry());
+
+    expect(state.currentEntry).toBe("0");
+    expect(state.previousValue).toBeNull();
+    expect(state.pendingOperator).toBeNull();
+    expect(state.phase).toBe("idle");
+  });
+
+  it("preserves the pending operation context after clearEntry", () => {
+    let state = calculatorReducer(initialState, enterDigit("9"));
+    state = calculatorReducer(state, selectOperator("+"));
+    state = calculatorReducer(state, enterDigit("4"));
+    state = calculatorReducer(state, clearEntry());
+
+    expect(state.currentEntry).toBe("0");
+    expect(state.previousValue).toBe(9);
+    expect(state.pendingOperator).toBe("+");
+    expect(state.phase).toBe("evaluated");
+
+    state = calculatorReducer(state, selectOperator("-"));
+
+    expect(state.currentEntry).toBe("0");
+    expect(state.previousValue).toBe(9);
+    expect(state.pendingOperator).toBe("-");
+    expect(state.phase).toBe("evaluated");
   });
 
   it("executes addition with equals", () => {

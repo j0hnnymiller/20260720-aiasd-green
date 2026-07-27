@@ -44,6 +44,38 @@ describe("App number entry behavior", () => {
     expect(screen.getByLabelText("Display")).toHaveTextContent("7");
   });
 
+  it("enters decimal-first values with a leading zero", async () => {
+    const { user } = renderApp();
+
+    await user.click(screen.getByRole("button", { name: "." }));
+    await user.click(screen.getByRole("button", { name: "5" }));
+
+    expect(screen.getByLabelText("Display")).toHaveTextContent("0.5");
+  });
+
+  it("prevents multiple decimal points in the active entry", async () => {
+    const { user } = renderApp();
+
+    await user.click(screen.getByRole("button", { name: "1" }));
+    await user.click(screen.getByRole("button", { name: "." }));
+    await user.click(screen.getByRole("button", { name: "." }));
+    await user.click(screen.getByRole("button", { name: "2" }));
+
+    expect(screen.getByLabelText("Display")).toHaveTextContent("1.2");
+  });
+
+  it("starts the next operand with a decimal after an operator", async () => {
+    const { user } = renderApp();
+
+    await user.click(screen.getByRole("button", { name: "9" }));
+    await user.click(screen.getByRole("button", { name: "+" }));
+    await user.click(screen.getByRole("button", { name: "." }));
+    await user.click(screen.getByRole("button", { name: "4" }));
+    await user.click(screen.getByRole("button", { name: "=" }));
+
+    expect(screen.getByLabelText("Display")).toHaveTextContent("9.4");
+  });
+
   it("starts fresh entry after evaluated result when typing a digit", async () => {
     const { store, user } = renderApp();
 
@@ -109,6 +141,23 @@ describe("App number entry behavior", () => {
     await user.click(screen.getByRole("button", { name: "=" }));
 
     expect(screen.getByLabelText("Display")).toHaveTextContent("27");
+  });
+
+  it("clears only the active entry with CE and preserves operator replacement", async () => {
+    const { user } = renderApp();
+
+    await user.click(screen.getByRole("button", { name: "9" }));
+    await user.click(screen.getByRole("button", { name: "+" }));
+    await user.click(screen.getByRole("button", { name: "4" }));
+    await user.click(screen.getByRole("button", { name: "CE" }));
+    await user.click(screen.getByRole("button", { name: "-" }));
+
+    expect(screen.getByLabelText("Display")).toHaveTextContent("0");
+
+    await user.click(screen.getByRole("button", { name: "4" }));
+    await user.click(screen.getByRole("button", { name: "=" }));
+
+    expect(screen.getByLabelText("Display")).toHaveTextContent("5");
   });
 
   it("shows readable error state on division by zero", async () => {

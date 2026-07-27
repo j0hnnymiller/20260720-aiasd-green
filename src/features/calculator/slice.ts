@@ -21,6 +21,37 @@ const appendDigit = (entry: string, digit: string): string => {
   return `${entry}${digit}`;
 };
 
+const enterDecimalEntry = (state: CalculatorState): void => {
+  if (state.currentEntry.includes(".")) {
+    return;
+  }
+
+  if (state.phase === "error") {
+    state.currentEntry = "0.";
+    state.previousValue = null;
+    state.pendingOperator = null;
+    state.errorMessage = null;
+    state.phase = "entering";
+    return;
+  }
+
+  if (state.phase === "evaluated" && state.pendingOperator === null) {
+    state.currentEntry = "0.";
+    state.phase = "entering";
+    return;
+  }
+
+  if (state.pendingOperator !== null && state.phase === "evaluated") {
+    state.currentEntry = "0.";
+    state.phase = "entering";
+    return;
+  }
+
+  state.currentEntry =
+    state.currentEntry === "0" ? "0." : `${state.currentEntry}.`;
+  state.phase = "entering";
+};
+
 const applyOperation = (
   left: number,
   operator: Operator,
@@ -84,6 +115,9 @@ const calculatorSlice = createSlice({
       state.currentEntry = appendDigit(state.currentEntry, action.payload);
       state.phase = "entering";
     },
+    enterDecimal: (state) => {
+      enterDecimalEntry(state);
+    },
     selectOperator: (state, action: PayloadAction<Operator>) => {
       if (state.phase === "error") {
         return;
@@ -109,6 +143,11 @@ const calculatorSlice = createSlice({
         state.previousValue = result;
         state.pendingOperator = nextOperator;
         state.phase = "evaluated";
+        return;
+      }
+
+      if (state.pendingOperator !== null && state.phase === "evaluated") {
+        state.pendingOperator = nextOperator;
         return;
       }
 
@@ -144,6 +183,20 @@ const calculatorSlice = createSlice({
       state.phase = "evaluated";
     },
     allClear: () => initialState,
+    clearEntry: (state) => {
+      if (state.phase === "error") {
+        return;
+      }
+
+      state.currentEntry = "0";
+
+      if (state.pendingOperator !== null) {
+        state.phase = "evaluated";
+        return;
+      }
+
+      state.phase = "idle";
+    },
     seedEvaluatedResult: (state, action: PayloadAction<string>) => {
       state.currentEntry = action.payload;
       state.phase = "evaluated";
@@ -154,9 +207,11 @@ const calculatorSlice = createSlice({
 
 export const {
   enterDigit,
+  enterDecimal,
   selectOperator,
   evaluateExpression,
   allClear,
+  clearEntry,
   seedEvaluatedResult,
 } = calculatorSlice.actions;
 export const calculatorReducer = calculatorSlice.reducer;

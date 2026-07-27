@@ -28,7 +28,7 @@ nextReview: "2026-10-24"
 
 ## Overview
 
-Apply these rules when editing files matching **/* in this CQRS calculator repository.
+Apply these rules when editing files matching \*_/_ in this CQRS calculator repository.
 
 ## Rules
 
@@ -47,6 +47,11 @@ Apply these rules when editing files matching **/* in this CQRS calculator repos
 
 - Keep changes small and intention-revealing.
 - Add or update tests with behavior changes.
+- Create `pnpm-workspace.yaml` only when the repository has multiple packages or explicit
+  workspace requirements.
+- If `pnpm-workspace.yaml` exists, keep a valid `packages:` list that matches real directories
+  and includes the repository root when needed.
+- Validate pnpm config changes by running install/list commands before requesting review.
 - Keep lint, typecheck, and test gates green.
 
 ## Do Not
@@ -54,10 +59,13 @@ Apply these rules when editing files matching **/* in this CQRS calculator repos
 - Mix command-side mutations into query-only paths.
 - Introduce hidden side effects.
 - Bypass architecture rules for convenience.
+- Commit placeholder workspace configuration files.
 
 ## PR Checklist
 
 - [ ] Command/query boundary preserved.
 - [ ] Edge cases covered by tests.
 - [ ] Accessibility verified where relevant.
+- [ ] Workspace configuration is either absent (single-package repo) or valid and intentional.
+- [ ] pnpm install/list validation completed after dependency or workspace config changes.
 - [ ] Lint, typecheck, and tests pass.

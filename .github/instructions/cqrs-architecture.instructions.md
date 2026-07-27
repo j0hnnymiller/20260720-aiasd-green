@@ -117,6 +117,18 @@ Command rules:
 - Commands can fail; queries should not.
 - One command should target one aggregate root.
 
+Repository-specific calculator invariants:
+
+- Operator replacement must not evaluate early. If a pending operator exists and no
+  right-hand operand is committed, selecting another operator replaces the pending operator only.
+- Operator chaining evaluates exactly once per committed right-hand operand, then updates the
+  pending operator.
+- Clear-entry behavior must preserve deterministic operator behavior. Example interaction:
+  `9 + CE -` replaces `+` with `-` and does not compute `9 + 0`.
+
+When changing calculator command handlers or reducer transitions, update reducer-level and
+UI-level regression tests that cover these invariants.
+
 ## Query Model Design
 
 - Shape queries for the UI or consumer use case.
@@ -176,6 +188,7 @@ Consistency decision matrix:
 
 - [ ] Command and query models are clearly separated
 - [ ] Write model enforces all invariants
+- [ ] Calculator command invariants are preserved when applicable
 - [ ] Read model is optimized for query use cases
 - [ ] Event publication is reliable when external consumers or async projections exist
 - [ ] Projection updates are idempotent and monitored when a projection pipeline exists

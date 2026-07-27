@@ -689,6 +689,8 @@ When generating tests:
 3. **Mock external dependencies**
 4. **Test happy path and error cases**
 5. **Use in-memory database for integration tests**
+6. **For reducer or command-transition changes, add a transition matrix and test each modified transition**
+7. **Add at least one cross-action regression path when behavior spans multiple commands**
 
 ### Unit Test Template
 
@@ -753,6 +755,8 @@ Generate tests for:
 - [ ] Business rule violations (duplicate user, etc.)
 - [ ] External service failures (database errors, etc.)
 - [ ] Edge cases (empty collections, null handling)
+- [ ] Transition matrix coverage for changed states and actions
+- [ ] Cross-action regressions for interactions that can silently alter semantics
 
 ## Validation and Quality Checks
 
@@ -775,6 +779,7 @@ After generating all files, verify:
 - [ ] Controller is thin (only routing to mediator)
 - [ ] Validator exists and is comprehensive
 - [ ] Tests cover happy path and error cases
+- [ ] Transition-sensitive command paths include regression tests (operator replacement/chaining/clear interactions when applicable)
 - [ ] All files follow naming conventions
 - [ ] Result type is appropriate for the use case
 - [ ] Cancellation tokens are used in async methods
